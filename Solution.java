@@ -10,7 +10,7 @@ public class Solution {
         Scanner inputScanner = new Scanner(System.in);
         Integer numberOfQueries = inputScanner.nextInt();
         
-        ArrayList<HashMap<Integer,ArrayList<Integer>>> graphArray = new ArrayList<>();
+       // ArrayList<HashMap<Integer,ArrayList<Integer>>> graphArray = new ArrayList<>();
 
         //for each query
         for(int i = 0; i < numberOfQueries; i++){
@@ -34,21 +34,19 @@ public class Solution {
                 graph.get(startEdge).add(endEdge);
                 graph.get(endEdge).add(startEdge);
             }
-            System.out.println(graph.toString());
-            
-            graphArray.add(graph);
+           
             
             Integer startingNode = inputScanner.nextInt();
             
             //init results array
-            Integer[] results = new Integer[numberOfNodes];
+            Integer[] results = new Integer[numberOfNodes+1];
             for(int j= 0; j < numberOfNodes+1; j++){
                 results[j] = -1;
             }
             
             //do BFS
             Integer currentLevel = 0;
-            Integer nextLevel = 1; 
+
             Queue<Integer> currentLevelQueue = new LinkedList<Integer>();
             Queue<Integer> nextLevelQueue = new LinkedList<Integer>();
             
@@ -56,19 +54,37 @@ public class Solution {
          
             while(currentLevelQueue.size() > 0){
                 Integer currentLevelNodeId = currentLevelQueue.poll();
-                results[currentLevelNodeId] = currentLevel;
-                
+                results[currentLevelNodeId] = currentLevel * 6;
                 //get children
                 ArrayList<Integer> children = graph.get(currentLevelNodeId);
                 
-                //loop over children
-                //add them to next level
-                //skip visited or don't include them, checkingg if -1 should be good enough
-                
-                //if current level queue is empty, set it to next level
-            }
+                //add all unvisited children to next level and results
+                for(int k = 0; k < children.size(); k++){
+                    Integer childNode = children.get(k);
+                    //if we havent seen this child yet, tehn result will be -1
+                    //unreachable nodes will never be looked at anyways
 
-            //read through resultarray multiply by 6 if # > 0, skip printing S
+                    if(results[childNode] == -1){
+                        nextLevelQueue.add(childNode);
+                    }
+                }
+                
+                //move on to next level if we are done with this one
+                if(currentLevelQueue.size() == 0){
+                    currentLevelQueue = nextLevelQueue;
+                    nextLevelQueue = new LinkedList<Integer>();
+                    currentLevel++;
+                }
+            }
+            
+
+            for(int l = 1; l < numberOfNodes+1; l++){
+                //skip start node at level 0
+                if(results[l] != 0){
+                    System.out.print(results[l] + " ");
+                }
+            }
+            System.out.println();
             
         }
         /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
